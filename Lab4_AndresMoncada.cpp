@@ -10,6 +10,15 @@ void print(char**);
 void ej2();
 char** genChar();
 bool validar(char**,int,int);
+//para las siguientes funciones c = cambiar, ar = arriba, ab = abajo, d = derecha, i = izquierda
+bool car(char**,int,int,bool);
+bool cab(char**,int,int,bool);
+bool cd(char**,int,int,bool);
+bool ci(char**,int,int,bool);
+bool card(char**,int,int,bool);
+bool cari(char**,int,int,bool);
+bool cabd(char**,int,int,bool);
+bool cabi(char**,int,int,bool);
 
 int main(){
 	srand(time(NULL));
@@ -126,13 +135,13 @@ void print(char** mc){
 void ej2(){
 	char** mc; //matriz de char
 	mc = genChar();
-	print(mc);
 	bool turno = true;
 	bool fin = false;
 	int f, c; //fila y columna
 	int el = 60;//espacios libres
 	while (!fin){
-		cout << "Turno de ";
+		print(mc);
+		cout << "Ingrese 0 y 0 para terminar el juego"<< endl << "Turno de ";
 		if(turno)
 			cout << "X";
 		else
@@ -141,15 +150,46 @@ void ej2(){
 		cin >> f;
 		cout << "Ingrese una columna: ";
 		cin >> c;
-		if (f == 0)
+		if (f == 0 && c == 0)
 			fin = true;
-		if(validar(mc,f,c))
-			cout << "YES";
-		else
-			cout << "NO";
+		if(validar(mc,f,c)){
+			if(turno)
+				mc[f][c] = 'X';
+			else
+				mc[f][c] = 'O';
+			car(mc,f-1,c,turno);
+			cab(mc,f+1,c,turno);
+			cd(mc,f,c+1,turno);
+			ci(mc,f,c-1,turno);
+			card(mc,f-1,c+1,turno);
+			cari(mc,f-1,c-1,turno);
+			cabd(mc,f+1,c+1,turno);
+			cabi(mc,f+1,c-1,turno);
+			turno = !turno;
+			el--;
+		}
+		if(el == 0)
+			fin = true;
+		else if(!fin)
+			cout << "Posición no válida";
 	}
-
-
+	int cx = 0;
+	int co = 0;
+	for(int i = 1; i < 9; i++){
+		for (int j = 1; j < 9; j++){
+			if(mc[i][j] == 'X')
+				cx++;
+			if(mc[i][j] == 'O')
+				co++;
+		}
+	}
+	if(cx > co)
+		cout << "Ganó X";
+	if(co > cx)
+		cout << "Gano O";
+	if(co == cx)
+		cout << "Empate";
+	cout << endl;
 	for(int i = 0; i < 9; i++){
 		delete[] mc[i];
 	}
@@ -234,4 +274,185 @@ bool validar(char** mc, int f, int c){
       else
 	      cout << "Fila o columna fuera de rango" << endl;
       return v;
-}      
+}
+
+bool car(char** mc, int f, int c, bool t){
+	bool ret = false;
+	if (f > 1){
+		if (t){
+			if(mc[f][c] == 'X')
+				ret = true;
+			else if(mc[f][c] == 'O')
+				ret = car(mc,f-1,c,t);
+			if(ret)
+				mc[f][c] = 'X';
+		}
+		else{
+			if(mc[f][c] == 'O')
+				ret = true;
+			else if(mc[f][c] == 'X')
+				ret = car(mc,f-1,c,t);
+			if(ret)
+				mc[f][c] = 'O';
+		}
+	}
+	return ret;
+}
+
+bool cab(char** mc, int f, int c, bool t){
+	bool ret = false;
+	if (f < 8){
+		if (t){
+			if(mc[f][c] == 'X')
+				ret = true;
+			else if(mc[f][c] == 'O')
+				ret = cab(mc,f+1,c,t);
+			if(ret)
+				mc[f][c] = 'X';
+		}
+		else{
+			if(mc[f][c] == 'O')
+				ret = true;
+			else if(mc[f][c] == 'X')
+				ret = cab(mc,f+1,c,t);
+			if(ret)
+				mc[f][c] = 'O';
+		}
+	}
+	return ret;
+}
+bool ci(char** mc, int f, int c, bool t){
+	bool ret = false;
+	if (c > 1){
+		if (t){
+			if(mc[f][c] == 'X')
+				ret = true;
+			else if(mc[f][c] == 'O')
+				ret = ci(mc,f,c-1,t);
+			if(ret)
+				mc[f][c] = 'X';
+		}
+		else{
+			if(mc[f][c] == 'O')
+				ret = true;
+			else if(mc[f][c] == 'X')
+				ret = ci(mc,f,c-1,t);
+			if(ret)
+				mc[f][c] = 'O';
+		}
+	}
+	return ret;
+}
+
+bool cd(char** mc, int f, int c, bool t){
+	bool ret = false;
+	if (c < 8){
+		if (t){
+			if(mc[f][c] == 'X')
+				ret = true;
+			else if(mc[f][c] == 'O')
+				ret = cd(mc,f,c+1,t);
+			if(ret)
+				mc[f][c] = 'X';
+		}
+		else{
+			if(mc[f][c] == 'O')
+				ret = true;
+			else if(mc[f][c] == 'X')
+				ret = cd(mc,f,c+1,t);
+			if(ret)
+				mc[f][c] = 'O';
+		}
+	}
+	return ret;
+}
+
+bool cari(char** mc, int f, int c, bool t){
+	bool ret = false;
+	if (f > 1 && c > 1){
+		if (t){
+			if(mc[f][c] == 'X')
+				ret = true;
+			else if(mc[f][c] == 'O')
+				ret = cari(mc,f-1,c-1,t);
+			if(ret)
+				mc[f][c] = 'X';
+		}
+		else{
+			if(mc[f][c] == 'O')
+				ret = true;
+			else if(mc[f][c] == 'X')
+				ret = cari(mc,f-1,c-1,t);
+			if(ret)
+				mc[f][c] = 'O';
+		}
+	}
+	return ret;
+}
+bool card(char** mc, int f, int c, bool t){
+	bool ret = false;
+	if (f > 1 && c < 8){
+		if (t){
+			if(mc[f][c] == 'X')
+				ret = true;
+			else if(mc[f][c] == 'O')
+				ret = card(mc,f-1,c+1,t);
+			if(ret)
+				mc[f][c] = 'X';
+		}
+		else{
+			if(mc[f][c] == 'O')
+				ret = true;
+			else if(mc[f][c] == 'X')
+				ret = card(mc,f-1,c+1,t);
+			if(ret)
+				mc[f][c] = 'O';
+		}
+	}
+	return ret;
+}
+bool cabi(char** mc, int f, int c, bool t){
+	bool ret = false;
+	if (f < 8 && c > 1){
+		if (t){
+			if(mc[f][c] == 'X')
+				ret = true;
+			else if(mc[f][c] == 'O')
+				ret = cabi(mc,f+1,c-1,t);
+			if(ret)
+				mc[f][c] = 'X';
+		}
+		else{
+			if(mc[f][c] == 'O')
+				ret = true;
+			else if(mc[f][c] == 'X')
+				ret = cabi(mc,f+1,c-1,t);
+			if(ret)
+				mc[f][c] = 'O';
+		}
+	}
+	return ret;
+}
+bool cabd(char** mc, int f, int c, bool t){
+	bool ret = false;
+	if (f < 8 && c < 8){
+		if (t){
+			if(mc[f][c] == 'X')
+				ret = true;
+			else if(mc[f][c] == 'O')
+				ret = cabd(mc,f+1,c+1,t);
+			if(ret)
+				mc[f][c] = 'X';
+		}
+		else{
+			if(mc[f][c] == 'O')
+				ret = true;
+			else if(mc[f][c] == 'X')
+				ret = cabd(mc,f+1,c+1,t);
+			if(ret)
+				mc[f][c] = 'O';
+		}
+	}
+	return ret;
+}
+
